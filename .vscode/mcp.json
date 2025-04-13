@@ -1,0 +1,13 @@
+{
+    "servers" : {
+    "dot-mcp" : {
+        "type" : "stdio",
+        "command" : "dotnet",
+        "args" : [
+            "run",
+            "--project",
+            "C:/Users/htrsa/RiderProjects/McpServerly/McpServerly/McpServerly.csproj"
+        ]
+    } 
+    }
+}
