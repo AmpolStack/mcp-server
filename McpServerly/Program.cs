@@ -27,13 +27,11 @@ class Program
         var logger = loggerFactory.CreateLogger("TempTool");
         TempTool.SetLogger(logger);
         
-        TempTool.CallingTemp("call one"); 
-        TempTool.CallingTemp("call two");
-        
+        TempTool.GetLastCallingNumber("call one"); 
+        TempTool.GetLastCallingNumber("call two");
+        TempTool.GetNextCallingNumber("call three");
         await host.RunAsync();
-
-
-
+        
     }
 }
 
@@ -49,14 +47,23 @@ public static class TempTool
         _logger = logger;
     }
     
-    [McpServerTool, Description("")]
-    public static void CallingTemp(string message)
+    [McpServerTool, Description("returns the calling number current")]
+    public static string GetLastCallingNumber(string message)
     {
         
         _counter++;
         var temp = $"Calling number {_counter}";
         _logger?.LogInformation(temp);
         _logger?.LogInformation(message);
+        return temp;
     }
 
+    [McpServerTool, Description("returns the next calling number")]
+    public static string GetNextCallingNumber(string message)
+    {
+        var temp = $"The next call number is {_counter + 1}";
+        _logger?.LogInformation(temp);
+        _logger?.LogInformation(message);
+        return temp;
+    }
 }
