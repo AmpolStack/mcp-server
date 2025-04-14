@@ -1,6 +1,6 @@
 ﻿namespace Services.Configurations;
 
-public class MongoSettings
+public class MongoConfiguration
 {
     public string? Username { get; set; }
     public string? Password { get; set; }
