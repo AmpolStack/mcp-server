@@ -1,10 +1,15 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
+using MongoDB.Driver;
 using Services.Configurations;
+using Services.Definitions;
+using Services.Implementations;
+using Services.Models;
 
 namespace McpServerly;
 
@@ -19,20 +24,38 @@ class Program
             opts.LogToStandardErrorThreshold = LogLevel.Trace;
         });
 
+        var mongoConfig = new MongoConfiguration();
+        builder.Configuration.GetSection("Databases:mongo").Bind(mongoConfig);
+        builder.Services
+            .AddSingleton<IMongoClient>(prov =>
+            {
+                var mongoClient = new MongoClient(mongoConfig.GetConnectionString());
+                return mongoClient;
+            })
+            .AddSingleton<IMongoDatabase>(prov =>
+            {
+                var client = prov.GetRequiredService<IMongoClient>();
+                return client.GetDatabase(mongoConfig.Database);
+            })
+            //Since this project is a test project, I don't really think it will include any other repository.
+            .AddScoped<IGenericRepository, ClientRepository>();
+        
         builder.Services
             .AddLogging(opts => opts.AddConsole())
             .AddMcpServer()
             .WithStdioServerTransport()
             .WithToolsFromAssembly();
 
-
-        var mongoConfig = new MongoConfiguration();
-        builder.Configuration.GetSection("Databases:mongo").Bind(mongoConfig);
-        
         
         var host = builder.Build();
         var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         var logger = loggerFactory.CreateLogger("TempTool");
+
+        var mongose = host.Services.GetRequiredService<IGenericRepository>();
+        
+        //test of functionality
+        var resp = await mongose.GetAllAsync();
+        
         TempTool.SetLogger(logger);
         
         TempTool.GetLastCallingNumber("call one"); 

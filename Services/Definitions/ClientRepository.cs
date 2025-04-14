@@ -8,18 +8,15 @@ namespace Services.Definitions;
 public class ClientRepository : IGenericRepository
 {
     private readonly IMongoCollection<Client> _clients;
-
-    //TODO: Implements the singleton pattern in mongo client, and probably for all databases yet
-    public ClientRepository(MongoConfiguration config)
+    
+    public ClientRepository(IMongoDatabase database)
     {
-        var mongoClient = new MongoClient(config.GetConnectionString());
-        var database = mongoClient.GetDatabase(config.Database);
-        _clients = database.GetCollection<Client>("Clients");
+        _clients = database.GetCollection<Client>("clients");
     }
 
     public async Task<IEnumerable<Client>> GetAllAsync()
     {
-        var query = await _clients.FindAsync(null);
+        var query = await _clients.FindAsync(_ => true);
         return await query.ToListAsync();
     }
 }
