@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
+using Services.Configurations;
 
 namespace McpServerly;
 
@@ -23,9 +24,11 @@ class Program
             .AddMcpServer()
             .WithStdioServerTransport()
             .WithToolsFromAssembly();
+
+
+        var mongoConfig = new MongoConfiguration();
+        builder.Configuration.GetSection("Databases:mongo").Bind(mongoConfig);
         
-        
-        var conf = builder.Configuration.GetSection("Databases:mongo");
         
         var host = builder.Build();
         var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
