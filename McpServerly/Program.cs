@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -11,6 +12,7 @@ class Program
     static async Task Main(string[] args)
     {
         var builder = Host.CreateApplicationBuilder(args);
+        builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
         builder.Logging.AddConsole(opts =>
         {
             opts.LogToStandardErrorThreshold = LogLevel.Trace;
@@ -21,6 +23,9 @@ class Program
             .AddMcpServer()
             .WithStdioServerTransport()
             .WithToolsFromAssembly();
+        
+        
+        var conf = builder.Configuration.GetSection("Databases:mongo");
         
         var host = builder.Build();
         var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
