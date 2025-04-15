@@ -3,5 +3,5 @@ namespace Services.Definitions;
 
 public interface IHtmlGeneratorService
 {
-    public Task<string> GenerateFromMarkdownString(string markdownString, CancellationToken ck = default);
+    public string GenerateFromMarkdownString(string markdownString);
 }
