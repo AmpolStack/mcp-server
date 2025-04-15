@@ -1,6 +1,7 @@
-﻿namespace Services.Definitions;
+﻿
+namespace Services.Definitions;
 
 public interface IHtmlGeneratorService
 {
-    public Task<string> GenerateFromMarkdownString(string markdownString);
+    public Task<string> GenerateFromMarkdownString(string markdownString, CancellationToken ck = default);
 }
