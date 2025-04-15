@@ -18,7 +18,12 @@ public class PdfGeneratorService : IPdfGeneratorService
     {
         try
         {
-            await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions() { Headless = true });
+            var browserFetcher = new BrowserFetcher();
+            await browserFetcher.DownloadAsync(); 
+            await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions()
+            {
+                Headless = true
+            });
             await using var page = await browser.NewPageAsync();
             await page.SetContentAsync(htmlContent);
             await page.PdfAsync(outputPath);

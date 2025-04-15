@@ -38,29 +38,31 @@ class Program
                 return client.GetDatabase(mongoConfig.Database);
             })
             //Since this project is a test project, I don't really think it will include any other repository.
-            .AddScoped<IGenericRepository, ClientRepository>();
+            .AddScoped<IGenericRepository, ClientRepository>()
+            .AddScoped<IHtmlGeneratorService, HtmlGeneratorService>()
+            .AddScoped<IPdfGeneratorService, PdfGeneratorService>();
         
         builder.Services
             .AddLogging(opts => opts.AddConsole())
             .AddMcpServer()
             .WithStdioServerTransport()
             .WithToolsFromAssembly();
-
+        
         
         var host = builder.Build();
         var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         var logger = loggerFactory.CreateLogger("TempTool");
 
-        var mongose = host.Services.GetRequiredService<IGenericRepository>();
-        
-        //test of functionality
-        var resp = await mongose.GetAllAsync();
+        var htmlGenerator = host.Services.GetRequiredService<IHtmlGeneratorService>();
+        var markdown = "# hello world 2\r\n## subtitle\r\n*Hello World!*";
+        var html = htmlGenerator.GenerateFromMarkdownString(markdown);
+
+        var pdfGenerator = host.Services.GetRequiredService<IPdfGeneratorService>();
+        var outputPath = host.Services.GetRequiredService<IConfiguration>().GetValue<string>("Resources:filePath")!;
+        var pdfResult = await pdfGenerator.ConvertHtmlStringToPdf(html, outputPath);
         
         TempTool.SetLogger(logger);
         
-        TempTool.GetLastCallingNumber("call one"); 
-        TempTool.GetLastCallingNumber("call two");
-        TempTool.GetNextCallingNumber("call three");
         await host.RunAsync();
         
     }
