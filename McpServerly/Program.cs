@@ -40,7 +40,9 @@ class Program
             //Since this project is a test project, I don't really think it will include any other repository.
             .AddScoped<IGenericRepository, ClientRepository>()
             .AddScoped<IHtmlGeneratorService, HtmlGeneratorService>()
-            .AddScoped<IPdfGeneratorService, PdfGeneratorService>();
+            .AddScoped<IPdfGeneratorService, PdfGeneratorService>()
+            //Probably in the future this dependency has to change its lifetime to scoped
+            .AddSingleton<IEmailService, EmailService>();
         
         builder.Services
             .AddLogging(opts => opts.AddConsole())
@@ -52,14 +54,21 @@ class Program
         var host = builder.Build();
         var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         var logger = loggerFactory.CreateLogger("TempTool");
-
-        var htmlGenerator = host.Services.GetRequiredService<IHtmlGeneratorService>();
-        var markdown = "# hello world 2\r\n## subtitle\r\n*Hello World!*";
-        var html = htmlGenerator.GenerateFromMarkdownString(markdown);
-
-        var pdfGenerator = host.Services.GetRequiredService<IPdfGeneratorService>();
+        //
+        // var htmlGenerator = host.Services.GetRequiredService<IHtmlGeneratorService>();
+        // var markdown = "# hello world 2\r\n## subtitle\r\n*Hello World!*";
+        // var html = htmlGenerator.GenerateFromMarkdownString(markdown);
+        //
+        // var pdfGenerator = host.Services.GetRequiredService<IPdfGeneratorService>();
         var outputPath = host.Services.GetRequiredService<IConfiguration>().GetValue<string>("Resources:filePath")!;
-        var pdfResult = await pdfGenerator.ConvertHtmlStringToPdf(html, outputPath);
+        // var pdfResult = await pdfGenerator.ConvertHtmlStringToPdf(html, outputPath);
+        //
+        var smpt = new SmtpServerConfiguration();
+        host.Services.GetService<IConfiguration>()!.GetSection("SmtpServer").Bind(smpt);
+        
+        var emailService = host.Services.GetService<IEmailService>();
+        var resp = await emailService!.SendEmailAsync("test 1", "body of test", "temporaly user", "sacount571@gmail.com",
+            outputPath, smpt);
         
         TempTool.SetLogger(logger);
         
