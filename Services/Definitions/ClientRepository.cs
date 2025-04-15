@@ -14,9 +14,10 @@ public class ClientRepository : IGenericRepository
         _clients = database.GetCollection<Client>("clients");
     }
 
-    public async Task<IEnumerable<Client>> GetAllAsync()
+    public async Task<IEnumerable<Client>> GetAllAsync(CancellationToken ck = default)
     {
-        var query = await _clients.FindAsync(_ => true);
-        return await query.ToListAsync();
+        var query = await _clients.FindAsync(_ => true, cancellationToken: ck);
+        return await query.ToListAsync(cancellationToken: ck);
     }
+    
 }
