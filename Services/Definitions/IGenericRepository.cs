@@ -1,6 +1,6 @@
 ﻿using Services.Models;
 
-namespace Services.Implementations;
+namespace Services.Definitions;
 
 public interface IGenericRepository
 {

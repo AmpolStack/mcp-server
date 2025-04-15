@@ -1,9 +1,8 @@
 ﻿using MongoDB.Driver;
-using Services.Configurations;
-using Services.Implementations;
+using Services.Definitions;
 using Services.Models;
 
-namespace Services.Definitions;
+namespace Services.Implementations;
 
 public class ClientRepository : IGenericRepository
 {
