@@ -12,6 +12,6 @@ public interface IEmailService
     public void SetMessage(string subject, string body);
     public void AddFile(string path, string subType);
     public void AddFile(string path, string mediaType, string subType, ContentEncoding encoding);
-    public Task<bool> BuildAndSendAsync();
-    public Task<bool> SendEmailAsync(string subject, string body, string toName, string toAddress, string path, SmtpServerConfiguration config);
+    public Task<bool> BuildAndSendAsync(SmtpServerConfiguration config);
+   
 }
