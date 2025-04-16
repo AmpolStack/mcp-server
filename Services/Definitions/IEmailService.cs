@@ -15,11 +15,3 @@ public interface IEmailService
     public Task<IMailPacker> BuildAsync();
    
 }
-
-public interface IMailPacker
-{
-    public void SetSmtpConfig(SmtpServerConfiguration config);
-    public void SetMailMessage(MimeMessage message);
-    public void Clear();
-    public Task<bool> SendAsync();
-}
