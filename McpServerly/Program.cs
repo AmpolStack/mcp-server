@@ -19,7 +19,14 @@ class Program
     static async Task Main(string[] args)
     {
         var builder = Host.CreateApplicationBuilder(args);
-        var appsettingsPath = "C:/Users/htrsa/RiderProjects/McpServerly/McpServerly/appsettings.json";
+        var appsettingsPath = "appsettings.json";
+        if (args.Length > 0)
+        {
+            if (!string.IsNullOrEmpty(args[0]))
+            {
+                appsettingsPath = $"{args[0]}/" + appsettingsPath;
+            }
+        }
         builder.Configuration.AddJsonFile(appsettingsPath, optional: false, reloadOnChange: true);
         builder.Logging.AddConsole(opts =>
         {

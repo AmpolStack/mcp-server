@@ -6,7 +6,9 @@
         "args" : [
             "run",
             "--project",
-            "C:/Users/htrsa/RiderProjects/McpServerly/McpServerly/McpServerly.csproj"
+            "C:/Users/htrsa/RiderProjects/McpServerly/McpServerly/McpServerly.csproj",
+            "--",
+            "C:/Users/htrsa/RiderProjects/McpServerly/McpServerly/"
         ]
     } 
     }
