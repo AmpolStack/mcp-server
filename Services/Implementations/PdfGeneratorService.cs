@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using PuppeteerSharp;
+using Services.Custom;
 using Services.Definitions;
 
 namespace Services.Implementations;
@@ -14,11 +15,15 @@ public class PdfGeneratorService : IPdfGeneratorService
     }
 
 
-    public async Task<bool> ConvertHtmlStringToPdf(string htmlContent, string outputPath)
+    public async Task<FileResult> ConvertHtmlStringToPdf(string htmlContent, string outputPath)
     {
+        var result = new FileResult();
         try
         {
             var browserFetcher = new BrowserFetcher();
+            var id = Guid.NewGuid().ToString();
+            outputPath = Path.Combine(outputPath, id);
+            outputPath += ".pdf";
             await browserFetcher.DownloadAsync(); 
             await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions()
             {
@@ -27,12 +32,16 @@ public class PdfGeneratorService : IPdfGeneratorService
             await using var page = await browser.NewPageAsync();
             await page.SetContentAsync(htmlContent);
             await page.PdfAsync(outputPath);
-            return true;
+            result.CompletePath = outputPath;
+            result.Success = true;
+            result.ExtensionPath = "pdf";
+            return result;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to generate pdf from HTML string");
-            return false;
+            result.Success = false;
+            return result;
         }
     }
 }

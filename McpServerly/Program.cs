@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MimeKit;
 using ModelContextProtocol.Server;
 using MongoDB.Driver;
 using Services.Configurations;
@@ -42,7 +43,8 @@ class Program
             .AddScoped<IHtmlGeneratorService, HtmlGeneratorService>()
             .AddScoped<IPdfGeneratorService, PdfGeneratorService>()
             //Probably in the future this dependency has to change its lifetime to scoped
-            .AddSingleton<IEmailService, EmailService>();
+            .AddSingleton<IEmailService, EmailService>()
+            .AddSingleton<IMailPacker, MailPack>();
         
         builder.Services
             .AddLogging(opts => opts.AddConsole())
@@ -54,22 +56,28 @@ class Program
         var host = builder.Build();
         var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         var logger = loggerFactory.CreateLogger("TempTool");
-        //
-        // var htmlGenerator = host.Services.GetRequiredService<IHtmlGeneratorService>();
-        // var markdown = "# hello world 2\r\n## subtitle\r\n*Hello World!*";
-        // var html = htmlGenerator.GenerateFromMarkdownString(markdown);
-        //
-        // var pdfGenerator = host.Services.GetRequiredService<IPdfGeneratorService>();
+        
+        var htmlGenerator = host.Services.GetRequiredService<IHtmlGeneratorService>();
+        var markdown = "# hello world 4\r\n## subtitle\r\n*Hello World!*";
+        var html = htmlGenerator.GenerateFromMarkdownString(markdown);
+        
+        var pdfGenerator = host.Services.GetRequiredService<IPdfGeneratorService>();
         var outputPath = host.Services.GetRequiredService<IConfiguration>().GetValue<string>("Resources:filePath")!;
-        // var pdfResult = await pdfGenerator.ConvertHtmlStringToPdf(html, outputPath);
-        //
+        var pdfResult = await pdfGenerator.ConvertHtmlStringToPdf(html, outputPath);
+        
         var smpt = new SmtpServerConfiguration();
         host.Services.GetService<IConfiguration>()!.GetSection("SmtpServer").Bind(smpt);
         
-        var emailService = host.Services.GetService<IEmailService>();
-        var resp = await emailService!.SendEmailAsync("test 1", "body of test", "temporaly user", "sacount571@gmail.com",
-            outputPath, smpt);
+        var emailService = host.Services.GetService<IEmailService>()!;
+
+        var packer = await emailService
+            .SetMessageBody("This is a test message")
+            .SetSenderEmail(smpt.Alias, smpt.UserHost)
+            .AddReceiverAddress("tempera", "sacount571@gmail.com")
+            .AddFile(pdfResult.CompletePath!, "application", pdfResult.ExtensionPath!, ContentEncoding.Base64)
+            .BuildAsync();
         
+        var resp = await packer.SetSmtpConfig(smpt).SendAsync();
         TempTool.SetLogger(logger);
         
         await host.RunAsync();

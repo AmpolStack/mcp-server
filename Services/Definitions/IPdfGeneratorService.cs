@@ -1,6 +1,8 @@
-﻿namespace Services.Definitions;
+﻿using Services.Custom;
+
+namespace Services.Definitions;
 
 public interface IPdfGeneratorService
 {
-    public Task<bool> ConvertHtmlStringToPdf(string htmlContent, string outputPath);
+    public Task<FileResult> ConvertHtmlStringToPdf(string htmlContent, string outputPath);
 }
