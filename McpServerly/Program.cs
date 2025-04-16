@@ -45,7 +45,9 @@ class Program
             .AddScoped<IPdfGeneratorService, PdfGeneratorService>()
             //Probably in the future this dependency has to change its lifetime to scoped
             .AddSingleton<IEmailService, EmailService>()
-            .AddSingleton<IMailPacker, MailPack>();
+            .AddSingleton<IMailPacker, MailPack>()
+            .Configure<SmtpServerConfiguration>(builder.Configuration.GetSection("SmtpServer"))
+            .Configure<ResourceFiles>(builder.Configuration.GetSection("ResourceFiles"));
         
         builder.Services
             .AddLogging(opts => opts.AddConsole())
