@@ -20,9 +20,9 @@ public class EmailService : IEmailService
         _mailbox = new MailBox();
     }
 
-    private MimePart TransformBridgeToMime(BridgeMimePart item)
+    private async Task<MimePart> TransformBridgeToMime(BridgeMimePart item)
     {
-        using var stream = File.OpenRead(item.Path!);
+        await using var stream = File.OpenRead(item.Path!);
         var attachment = new MimePart(item.MediaType, item.SubType)
         {
             Content = new MimeContent(stream, ContentEncoding.Default),
@@ -32,47 +32,53 @@ public class EmailService : IEmailService
         };
         return attachment;
     }
-    private bool ResetAndReturnFalse(string message)
+    private bool ResetAndLogError(string message)
     {
         Reset();
         _logger.LogError("error: {message}", message);
         return false;
     }
 
-    public void SetSenderEmail(string username, string address)
+    public IEmailService SetSenderEmail(string username, string address)
     {
         _mailbox.Sender = new MailboxAddress(Encoding.Unicode, username , address);
+        return this;
     }
 
-    public void AddReceiverAddress(string username, string address)
+    public IEmailService AddReceiverAddress(string username, string address)
     {
         _mailbox.Recipients.Add(new MailboxAddress(Encoding.Unicode, username , address));
+        return this;
     }
-    public void SetMessageBody(string content)
+    public IEmailService SetMessageBody(string content)
     {
         _mailbox.Body = content;
+        return this;
     }
-    public void SetMessageSubject(string content)
+    public IEmailService SetMessageSubject(string content)
     {
         _mailbox.Subject = content;
+        return this;
     }
 
-    public void SetMessage(string subject, string body)
+    public IEmailService SetMessage(string subject, string body)
     {
         _mailbox.Body = body;
         _mailbox.Subject = subject;
+        return this;
     }
 
-    public void AddFile(string path, string subType)
+    public IEmailService AddFile(string path, string subType)
     {
         _mailbox.BridgeFiles.Add(new BridgeMimePart()
         {
             Path = path,
             SubType = subType
         });
+        return this;
     }
     
-    public void AddFile(string path, string mediaType, string subType, ContentEncoding encoding)
+    public IEmailService AddFile(string path, string mediaType, string subType, ContentEncoding encoding)
     {
         _mailbox.BridgeFiles.Add(new BridgeMimePart()
         {
@@ -81,6 +87,7 @@ public class EmailService : IEmailService
             MediaType = mediaType,
             SubType = subType
         });
+        return this;
     }
     
     
@@ -95,17 +102,17 @@ public class EmailService : IEmailService
     {
         if (_mailbox.Sender == null)
         {
-            ResetAndReturnFalse("The sender email address is null, its necessary.");
+            ResetAndLogError("The sender email address is null, its necessary.");
         }
 
         if (_mailbox.Recipients.Count == 0)
         {
-            ResetAndReturnFalse("The recipient email address is null, its necessary.");
+            ResetAndLogError("The recipient email address is null, its necessary.");
         }
 
         if (string.IsNullOrEmpty(_mailbox.Body))
         {
-            ResetAndReturnFalse("The body email address is null, its necessary.");
+            ResetAndLogError("The body email address is null, its necessary.");
         }
 
         var generatedId = Guid.NewGuid().ToString();
@@ -129,7 +136,7 @@ public class EmailService : IEmailService
             {
                 if (item.Path == null)
                 {
-                    ResetAndReturnFalse("One file path is null, its necessary.");
+                    ResetAndLogError("One file path is null, its necessary.");
                 }
                 
                 if (item.MediaType == null)
@@ -137,9 +144,9 @@ public class EmailService : IEmailService
                     //var fileType = Path.GetExtension(item.Path);
                     item.MediaType = "application";
                 }
-                var task = Task.Run(() =>
+                var task = Task.Run(async () =>
                 {
-                    var attachment = TransformBridgeToMime(item);
+                    var attachment = await TransformBridgeToMime(item);
                     multipart.Add(attachment);
                 });
                 tasks.Add(task);
