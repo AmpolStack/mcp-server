@@ -22,21 +22,21 @@ public class EmailService : IEmailService
 
     private async Task<MimePart> TransformBridgeToMime(BridgeMimePart item)
     {
-        await using var stream = File.OpenRead(item.Path!);
+        var fileBytes = await File.ReadAllBytesAsync(item.Path!);
+        var memoryStream = new MemoryStream(fileBytes);
         var attachment = new MimePart(item.MediaType, item.SubType)
         {
-            Content = new MimeContent(stream, ContentEncoding.Default),
+            Content = new MimeContent(memoryStream, ContentEncoding.Default),
             ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
             ContentTransferEncoding = ContentEncoding.Base64,
             FileName = Path.GetFileName(item.Path)
         };
         return attachment;
     }
-    private bool ResetAndLogError(string message)
+    private void ResetAndLogError(string message)
     {
         Reset();
         _logger.LogError("error: {message}", message);
-        return false;
     }
 
     public IEmailService SetSenderEmail(string username, string address)
