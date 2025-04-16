@@ -19,7 +19,8 @@ class Program
     static async Task Main(string[] args)
     {
         var builder = Host.CreateApplicationBuilder(args);
-        builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+        var appsettingsPath = "C:/Users/htrsa/RiderProjects/McpServerly/McpServerly/appsettings.json";
+        builder.Configuration.AddJsonFile(appsettingsPath, optional: false, reloadOnChange: true);
         builder.Logging.AddConsole(opts =>
         {
             opts.LogToStandardErrorThreshold = LogLevel.Trace;
@@ -54,66 +55,8 @@ class Program
         
         
         var host = builder.Build();
-        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
-        var logger = loggerFactory.CreateLogger("TempTool");
-        
-        var htmlGenerator = host.Services.GetRequiredService<IHtmlGeneratorService>();
-        var markdown = "# hello world 4\r\n## subtitle\r\n*Hello World!*";
-        var html = htmlGenerator.GenerateFromMarkdownString(markdown);
-        
-        var pdfGenerator = host.Services.GetRequiredService<IPdfGeneratorService>();
-        var outputPath = host.Services.GetRequiredService<IConfiguration>().GetValue<string>("Resources:filePath")!;
-        var pdfResult = await pdfGenerator.ConvertHtmlStringToPdf(html, outputPath);
-        
-        var smpt = new SmtpServerConfiguration();
-        host.Services.GetService<IConfiguration>()!.GetSection("SmtpServer").Bind(smpt);
-        
-        var emailService = host.Services.GetService<IEmailService>()!;
-
-        var packer = await emailService
-            .SetMessageBody("This is a test message")
-            .SetSenderEmail(smpt.Alias, smpt.UserHost)
-            .AddReceiverAddress("tempera", "sacount571@gmail.com")
-            .AddFile(pdfResult.CompletePath!, "application", pdfResult.ExtensionPath!, ContentEncoding.Base64)
-            .BuildAsync();
-        
-        var resp = await packer.SetSmtpConfig(smpt).SendAsync();
-        TempTool.SetLogger(logger);
         
         await host.RunAsync();
         
-    }
-}
-
-[McpServerToolType]
-public static class TempTool
-{
-    private static int _counter = 0;
-    private static ILogger? _logger;
-
-
-    public static void SetLogger(ILogger? logger)
-    {
-        _logger = logger;
-    }
-    
-    [McpServerTool, Description("returns the calling number current")]
-    public static string GetLastCallingNumber(string message)
-    {
-        
-        _counter++;
-        var temp = $"Calling number {_counter}";
-        _logger?.LogInformation(temp);
-        _logger?.LogInformation(message);
-        return temp;
-    }
-
-    [McpServerTool, Description("returns the next calling number")]
-    public static string GetNextCallingNumber(string message)
-    {
-        var temp = $"The next call number is {_counter + 1}";
-        _logger?.LogInformation(temp);
-        _logger?.LogInformation(message);
-        return temp;
     }
 }
