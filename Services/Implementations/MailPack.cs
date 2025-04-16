@@ -20,14 +20,16 @@ public class MailPack : IMailPacker
     {
         _logger = logger.CreateLogger<MailPack>();
     }
-    public void SetSmtpConfig(SmtpServerConfiguration config)
+    public IMailPacker SetSmtpConfig(SmtpServerConfiguration config)
     {
         _smtpConfig = config;
+        return this;
     }
 
-    public void SetMailMessage(MimeMessage message)
+    public IMailPacker SetMailMessage(MimeMessage message)
     {
         _mailMessage = message;
+        return this;
     }
     
     public async Task<bool> SendAsync()
