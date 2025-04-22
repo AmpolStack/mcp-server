@@ -7,7 +7,6 @@ namespace Tests.TestServices;
 
 public class HtmlGeneratorServiceTest
 {
-
     private static Mock<ILoggerFactory> ComposeFactoryMock()
     {
         var factory = new Mock<ILoggerFactory>();
@@ -29,8 +28,7 @@ public class HtmlGeneratorServiceTest
         Assert.Empty(resp);
         factory.Verify(f => f.CreateLogger(It.Is<string>(s => s.Contains(nameof(HtmlGeneratorService)))), Times.Once);
     }
-
-
+    
     [Theory]
     [InlineData("hello", "<p>hello</p>\n")]
     [InlineData("*i*", "<p><em>i</em></p>\n")]

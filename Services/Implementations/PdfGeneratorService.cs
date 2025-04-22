@@ -18,6 +18,12 @@ public class PdfGeneratorService : IPdfGeneratorService
     public async Task<FileResult> ConvertHtmlStringToPdf(string htmlContent, string outputPath)
     {
         var result = new FileResult();
+        if (string.IsNullOrEmpty(htmlContent) || string.IsNullOrWhiteSpace(outputPath))
+        {
+            result.Success = false;
+            return result;
+        }
+        
         try
         {
             var browserFetcher = new BrowserFetcher();
