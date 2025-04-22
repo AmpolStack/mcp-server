@@ -13,11 +13,11 @@ public class HtmlGeneratorService : IHtmlGeneratorService
         this._logger = loggerFactory.CreateLogger<HtmlGeneratorService>();
     }
     
-    public string GenerateFromMarkdownString(string? markdownString)
+    public string GenerateFromMarkdownString(string markdownString)
     {
-        if (markdownString == null)
+        if (string.IsNullOrEmpty(markdownString))
         {
-            return "";
+            throw new ArgumentNullException(nameof(markdownString));
         }
         
         try
@@ -28,7 +28,7 @@ public class HtmlGeneratorService : IHtmlGeneratorService
         catch(Exception ex)
         {
             _logger.LogError(ex, "Failed to generate html from Markdown");
-            return "Failed to generate html from Markdown";
+            throw new Exception(ex.Message);
         }
     }
 }

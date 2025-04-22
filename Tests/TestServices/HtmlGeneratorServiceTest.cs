@@ -22,10 +22,8 @@ public class HtmlGeneratorServiceTest
         var factory = ComposeFactoryMock();
         var service = new HtmlGeneratorService(factory.Object);
         
-        //Act
-        var resp = service.GenerateFromMarkdownString(null);
-        //Assert
-        Assert.Empty(resp);
+        //Act & Assert
+        Assert.Throws<ArgumentNullException>(() => service.GenerateFromMarkdownString(null!));
         factory.Verify(f => f.CreateLogger(It.Is<string>(s => s.Contains(nameof(HtmlGeneratorService)))), Times.Once);
     }
     

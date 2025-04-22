@@ -29,6 +29,22 @@ public class PdfGeneratorServiceTest
         Assert.Null(resp.CompletePath);
         Assert.Null(resp.ExtensionPath);
     }
+
+    [Fact]
+    public async Task WhenOutputPathNotExists()
+    {
+        //Arrange
+        var factory = ComposeFactoryMock();
+        var service = new PdfGeneratorService(factory.Object);
+        
+        //Act
+        var resp = await service.ConvertHtmlStringToPdf("<h1>Template title</h1><p>lorem ipsum</p>", "none");
+        
+        //Assert
+        Assert.False(resp.Success);
+        Assert.Null(resp.CompletePath);
+        Assert.Null(resp.ExtensionPath);
+    }
     
     
 }
