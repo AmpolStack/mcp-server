@@ -7,24 +7,26 @@ namespace Tests.TestServices;
 
 public class HtmlGeneratorServiceTest
 {
-    private static Mock<ILoggerFactory> ComposeFactoryMock()
+    private readonly Mock<ILoggerFactory> _loggerFactory;
+
+    public HtmlGeneratorServiceTest()
     {
         var factory = new Mock<ILoggerFactory>();
         var logger = new Mock<ILogger<HtmlGeneratorService>>();
         factory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(logger.Object);
-        return factory;
+        _loggerFactory = factory;
     }
     
     [Fact]
     public void WhenTheInputIsNull()
     {
         //Arrange
-        var factory = ComposeFactoryMock();
-        var service = new HtmlGeneratorService(factory.Object);
+        var logger = _loggerFactory;
+        var service = new HtmlGeneratorService(logger.Object);
         
         //Act & Assert
         Assert.Throws<ArgumentNullException>(() => service.GenerateFromMarkdownString(null!));
-        factory.Verify(f => f.CreateLogger(It.Is<string>(s => s.Contains(nameof(HtmlGeneratorService)))), Times.Once);
+        logger.Verify(f => f.CreateLogger(It.Is<string>(s => s.Contains(nameof(HtmlGeneratorService)))), Times.Once);
     }
     
     [Theory]
@@ -36,8 +38,8 @@ public class HtmlGeneratorServiceTest
     public void ProveInputs(string md, string html)
     {
         //Arrange
-        var factory = ComposeFactoryMock();
-        var service = new HtmlGeneratorService(factory.Object);
+        var logger = _loggerFactory;
+        var service = new HtmlGeneratorService(logger.Object);
         
         //Act
         var resp = service.GenerateFromMarkdownString(md);
