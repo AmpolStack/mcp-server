@@ -34,7 +34,7 @@ public static class ToolsClient
             null,
             CancellationToken.None
         );
-
+        
         Console.WriteLine(result.Content.First(c => c.Type == "text").Text);
     }
 }

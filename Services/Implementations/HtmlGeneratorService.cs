@@ -13,8 +13,13 @@ public class HtmlGeneratorService : IHtmlGeneratorService
         this._logger = loggerFactory.CreateLogger<HtmlGeneratorService>();
     }
     
-    public string GenerateFromMarkdownString(string markdownString)
+    public string GenerateFromMarkdownString(string? markdownString)
     {
+        if (markdownString == null)
+        {
+            return "";
+        }
+        
         try
         {
             var html = Markdown.ToHtml(markdownString);
