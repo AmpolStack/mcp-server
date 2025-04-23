@@ -11,10 +11,10 @@ public class MailServiceTests
 {
     private readonly Mock<ILoggerFactory> _loggerFactory;
     private readonly Mock<IMailPacker> _mailPacker;
-    private static readonly string SenderMail = Env.GetVariable("Email:SenderMail:mail");
-    private static readonly string ReceiverMail = Env.GetVariable("Email:ReceiverMail:mail");
-    private static readonly string SenderName = Env.GetVariable("Email:SenderMail:username");
-    private static readonly string ReceiverName = Env.GetVariable("Email:ReceiverMail:username");
+    private static readonly string SenderMail = Env.GetVariable("Email:Sender:mail");
+    private static readonly string ReceiverMail = Env.GetVariable("Email:Receiver:mail");
+    private static readonly string SenderName = Env.GetVariable("Email:Sender:username");
+    private static readonly string ReceiverName = Env.GetVariable("Email:Receiver:username");
 
     public MailServiceTests()
     {
@@ -82,5 +82,22 @@ public class MailServiceTests
         Assert.Throws<ArgumentNullException>(() => service.AddFile(null!, null!));
         _loggerFactory.Verify(x => x.CreateLogger(It.IsAny<string>()), Times.Once);
     }
-    
+
+    [Fact]
+    public async Task WhenBuildAndTheReceiverIsNull()
+    {
+        //Arrange
+        var logger = _loggerFactory!;
+        var packer = _mailPacker!;
+        var service = new EmailService(logger.Object, packer.Object);
+        
+        //Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await service.SetMessage("Test Subject", "Test Body")
+                    .SetSenderEmail(SenderName, SenderMail)
+                    .BuildAsync()
+            );
+        
+        _loggerFactory.Verify(x => x.CreateLogger(It.IsAny<string>()), Times.Once);
+    }
 }
