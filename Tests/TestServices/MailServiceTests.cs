@@ -30,7 +30,7 @@ public class MailServiceTests
     }
 
     [Fact]
-    public async Task WhenSubjectOrBodyIsNull()
+    public void WhenSubjectOrBodyIsNull()
     {
         //Arrange
         var logger = _loggerFactory!;
@@ -39,17 +39,23 @@ public class MailServiceTests
 
         
         //Act & Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-                await service.SetMessage(null!, null!)
-                .SetSenderEmail(SenderName, SenderMail)
-                .AddReceiverAddress(ReceiverName, ReceiverMail)
-                .BuildAsync()
-        );
-        
+        Assert.Throws<ArgumentNullException>(() => service.SetMessage(null!, null!));
         _loggerFactory.Verify(x => x.CreateLogger(It.IsAny<string>()), Times.Once);
 
     }
-    
+
+    [Fact]
+    public void WhenReceiverOrSenderIsNull()
+    {
+        //Arrange
+        var logger = _loggerFactory!;
+        var packer = _mailPacker!;
+        var service = new EmailService(logger.Object, packer.Object);
+        
+        //Act & Assert
+        Assert.Throws<ArgumentNullException>(() => service.SetSenderEmail(null!, null!));
+        _loggerFactory.Verify(x => x.CreateLogger(It.IsAny<string>()), Times.Once);
+    }
     
     
 }

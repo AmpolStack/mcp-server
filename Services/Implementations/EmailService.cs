@@ -50,6 +50,8 @@ public class EmailService : IEmailService
 
     public IEmailService SetSenderEmail(string username, string address)
     {
+        ProveIfNullOrEmpty(username);
+        ProveIfNullOrEmpty(address);
         _mailbox.Sender = new MailboxAddress(Encoding.Unicode, username , address);
         return this;
     }
