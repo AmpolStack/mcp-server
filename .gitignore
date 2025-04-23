@@ -3,3 +3,4 @@ bin
 obj
 appsettings.json
 McpServerly.sln.DotSettings.user
+Env.cs
