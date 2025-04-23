@@ -23,11 +23,9 @@ public class EmailService : IEmailService
 
     private void ProveIfNullOrEmpty(string param)
     {
-        if (string.IsNullOrEmpty(param))
-        {
-            Reset(); 
-            throw new ArgumentNullException(nameof(param), nameof(param) + " cannot be null.");
-        }
+        if (!string.IsNullOrEmpty(param)) return;
+        Reset(); 
+        throw new ArgumentNullException(nameof(param), nameof(param) + " cannot be null.");
     }
     
     private async Task<MimePart> TransformBridgeToMime(BridgeMimePart item)
@@ -126,11 +124,21 @@ public class EmailService : IEmailService
         var tasks = new List<Task>();
         var multipart = new Multipart("mixed");
         
+        message.From.Add(_mailbox.Sender);
+
+        if (_mailbox.Recipients.Count <= 0)
+        {
+            throw new InvalidOperationException("No recipients have been provided.");
+        }
+        
+        message.To.AddRange(_mailbox.Recipients);
+        message.Subject = _mailbox.Subject;
         var bodyText = new TextPart("plain")
         {
             Text = _mailbox.Body
         };
-   
+        
+        
         if (_mailbox.BridgeFiles.Count > 0)
         {
             foreach (var item in _mailbox.BridgeFiles)
@@ -156,9 +164,7 @@ public class EmailService : IEmailService
             
         }
         
-        message.From.Add(_mailbox.Sender);
-        message.To.AddRange(_mailbox.Recipients);
-        message.Subject = _mailbox.Subject;
+        
         
         multipart.Add(bodyText);
 
