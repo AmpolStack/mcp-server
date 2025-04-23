@@ -45,7 +45,7 @@ public class MailServiceTests
     }
 
     [Fact]
-    public void WhenReceiverOrSenderIsNull()
+    public void WhenSenderIsNull()
     {
         //Arrange
         var logger = _loggerFactory!;
@@ -56,6 +56,31 @@ public class MailServiceTests
         Assert.Throws<ArgumentNullException>(() => service.SetSenderEmail(null!, null!));
         _loggerFactory.Verify(x => x.CreateLogger(It.IsAny<string>()), Times.Once);
     }
-    
+
+    [Fact]
+    public void WhenReceiverIsNull()
+    {
+        //Arrange
+        var logger = _loggerFactory!;
+        var packer = _mailPacker!;
+        var service = new EmailService(logger.Object, packer.Object);
+        
+        //Act & Assert
+        Assert.Throws<ArgumentNullException>(() => service.AddReceiverAddress(null!, null!));
+        _loggerFactory.Verify(x => x.CreateLogger(It.IsAny<string>()), Times.Once);
+    }
+
+    [Fact]
+    public void WhenIsNotNull()
+    {
+        //Arrange
+        var logger = _loggerFactory!;
+        var packer = _mailPacker!;
+        var service = new EmailService(logger.Object, packer.Object);
+        
+        //Act & Assert
+        Assert.Throws<ArgumentNullException>(() => service.AddFile(null!, null!));
+        _loggerFactory.Verify(x => x.CreateLogger(It.IsAny<string>()), Times.Once);
+    }
     
 }

@@ -21,10 +21,11 @@ public class EmailService : IEmailService
         _mailbox = new MailBox();
     }
 
-    private static void ProveIfNullOrEmpty(string param)
+    private void ProveIfNullOrEmpty(string param)
     {
         if (string.IsNullOrEmpty(param))
         {
+            Reset(); 
             throw new ArgumentNullException(nameof(param), nameof(param) + " cannot be null.");
         }
     }
@@ -58,32 +59,35 @@ public class EmailService : IEmailService
 
     public IEmailService AddReceiverAddress(string username, string address)
     {
+        ProveIfNullOrEmpty(username);
+        ProveIfNullOrEmpty(address);
         _mailbox.Recipients.Add(new MailboxAddress(Encoding.Unicode, username , address));
         return this;
     }
     public IEmailService SetMessageBody(string content)
     {
+        ProveIfNullOrEmpty(content);
         _mailbox.Body = content;
         return this;
     }
     public IEmailService SetMessageSubject(string content)
     {
+        ProveIfNullOrEmpty(content);
         _mailbox.Subject = content;
         return this;
     }
 
     public IEmailService SetMessage(string subject, string body)
     {
-        ProveIfNullOrEmpty(subject);
-        ProveIfNullOrEmpty(body);
-        
-        _mailbox.Body = body;
-        _mailbox.Subject = subject;
+        SetMessageSubject(subject);
+        SetMessageBody(body);
         return this;
     }
 
     public IEmailService AddFile(string path, string subType)
     {
+        ProveIfNullOrEmpty(path);
+        ProveIfNullOrEmpty(subType);
         _mailbox.BridgeFiles.Add(new BridgeMimePart()
         {
             Path = path,
@@ -94,6 +98,9 @@ public class EmailService : IEmailService
     
     public IEmailService AddFile(string path, string mediaType, string subType, ContentEncoding encoding)
     {
+        ProveIfNullOrEmpty(path);
+        ProveIfNullOrEmpty(subType);
+        ProveIfNullOrEmpty(mediaType);
         _mailbox.BridgeFiles.Add(new BridgeMimePart()
         {
             Encoding = encoding,
