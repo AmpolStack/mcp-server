@@ -1,4 +1,5 @@
-﻿using System.Net.Mail;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net.Mail;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using MimeKit;
@@ -20,6 +21,14 @@ public class EmailService : IEmailService
         _mailbox = new MailBox();
     }
 
+    private static void ProveIfNullOrEmpty(string param)
+    {
+        if (string.IsNullOrEmpty(param))
+        {
+            throw new ArgumentNullException(nameof(param), nameof(param) + " cannot be null.");
+        }
+    }
+    
     private async Task<MimePart> TransformBridgeToMime(BridgeMimePart item)
     {
         var fileBytes = await File.ReadAllBytesAsync(item.Path!);
@@ -63,6 +72,9 @@ public class EmailService : IEmailService
 
     public IEmailService SetMessage(string subject, string body)
     {
+        ProveIfNullOrEmpty(subject);
+        ProveIfNullOrEmpty(body);
+        
         _mailbox.Body = body;
         _mailbox.Subject = subject;
         return this;
@@ -100,27 +112,7 @@ public class EmailService : IEmailService
     
     public async Task<IMailPacker> BuildAsync()
     {
-        if (_mailbox.Sender == null)
-        {
-            ResetAndLogError("The sender email address is null, its necessary.");
-        }
-
-        if (_mailbox.Recipients.Count == 0)
-        {
-            ResetAndLogError("The recipient email address is null, its necessary.");
-        }
-
-        if (string.IsNullOrEmpty(_mailbox.Body))
-        {
-            ResetAndLogError("The body email address is null, its necessary.");
-        }
-
-        var generatedId = Guid.NewGuid().ToString();
-        if (string.IsNullOrEmpty(_mailbox.Subject))
-        {
-            _mailbox.Subject = "GENERATED EMAIL: " + generatedId;
-        }
-
+        
         var message = new MimeMessage();
         var tasks = new List<Task>();
         var multipart = new Multipart("mixed");
