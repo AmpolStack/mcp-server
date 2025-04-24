@@ -100,4 +100,24 @@ public class MailServiceTests
         
         _loggerFactory.Verify(x => x.CreateLogger(It.IsAny<string>()), Times.Once);
     }
+
+    [Fact]
+    public async Task WhenOneOrManyFilesNotExist()
+    {
+        //Arrange
+        var logger = _loggerFactory!;
+        var packer = _mailPacker!;
+        var service = new EmailService(logger.Object, packer.Object);
+        
+        //Act & Assert
+        await Assert.ThrowsAsync<FileNotFoundException>(async () =>
+            await service.SetMessage("Test Subject", "Test Body")
+                .SetSenderEmail(SenderName, SenderMail)
+                .AddReceiverAddress(ReceiverName, ReceiverMail)
+                .AddFile("none", "none")
+                .BuildAsync()
+        );
+        
+        _loggerFactory.Verify(x => x.CreateLogger(It.IsAny<string>()), Times.Once);
+    }
 }

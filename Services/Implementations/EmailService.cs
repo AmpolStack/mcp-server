@@ -143,16 +143,11 @@ public class EmailService : IEmailService
         {
             foreach (var item in _mailbox.BridgeFiles)
             {
-                if (item.Path == null)
-                {
-                    ResetAndLogError("One file path is null, its necessary.");
-                }
+               
+                ProveIfNullOrEmpty(item.Path!);
                 
-                if (item.MediaType == null)
-                {
-                    //var fileType = Path.GetExtension(item.Path);
-                    item.MediaType = "application";
-                }
+                item.MediaType ??= "application";
+                
                 var task = Task.Run(async () =>
                 {
                     var attachment = await TransformBridgeToMime(item);
@@ -163,8 +158,6 @@ public class EmailService : IEmailService
             }
             
         }
-        
-        
         
         multipart.Add(bodyText);
 
