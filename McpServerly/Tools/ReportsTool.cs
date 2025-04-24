@@ -65,11 +65,19 @@ public class ReportsTool
             .AddFile(fileResult.CompletePath!, fileResult.ExtensionPath!)
             .BuildAsync();
 
-        var messageResult = await mailMessage
-            .SetSmtpConfig(_smtpServerConfiguration)
-            .SendAsync();
-
-        return messageResult;
+        try
+        {
+            await mailMessage
+                .SetSmtpConfig(_smtpServerConfiguration)
+                .SendAsync();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return false;
+        }
+        
     }
     
 }

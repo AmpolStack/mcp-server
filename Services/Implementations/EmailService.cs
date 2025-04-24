@@ -12,7 +12,6 @@ namespace Services.Implementations;
 
 public class EmailService : IEmailService
 {
-    private readonly ILogger<EmailService> _logger;
     private MailBox _mailbox = new MailBox();
     private readonly IMailPacker _mailPacker;
 
@@ -28,7 +27,7 @@ public class EmailService : IEmailService
         throw new ArgumentNullException(nameof(param), nameof(param) + " cannot be null.");
     }
     
-    private async Task<MimePart> TransformBridgeToMime(BridgeMimePart item)
+    private static async Task<MimePart> TransformBridgeToMime(BridgeMimePart item)
     {
         var fileBytes = await File.ReadAllBytesAsync(item.Path!);
         var memoryStream = new MemoryStream(fileBytes);
@@ -41,12 +40,7 @@ public class EmailService : IEmailService
         };
         return attachment;
     }
-    private void ResetAndLogError(string message)
-    {
-        Reset();
-        _logger.LogError("error: {message}", message);
-    }
-
+  
     public IEmailService SetSenderEmail(string username, string address)
     {
         ProveIfNullOrEmpty(username);
@@ -110,10 +104,9 @@ public class EmailService : IEmailService
     }
     
     
-    public EmailService(ILoggerFactory loggerFactory, IMailPacker mailPacker)
+    public EmailService(IMailPacker mailPacker)
     {
         Reset();
-        _logger = loggerFactory.CreateLogger<EmailService>();
         _mailPacker = mailPacker;
     }
     

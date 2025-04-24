@@ -9,7 +9,6 @@ namespace Tests.TestServices;
 
 public class MailServiceTests
 {
-    private readonly Mock<ILoggerFactory> _loggerFactory;
     private readonly Mock<IMailPacker> _mailPacker;
     private static readonly string SenderMail = Env.GetVariable("Email:Sender:mail");
     private static readonly string ReceiverMail = Env.GetVariable("Email:Receiver:mail");
@@ -18,78 +17,61 @@ public class MailServiceTests
 
     public MailServiceTests()
     {
-        var factory = new Mock<ILoggerFactory>();
-        var logger = new Mock<ILogger<EmailService>>();
         var packer = new Mock<IMailPacker>();
-        
-        factory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(logger.Object);
-        
-        _loggerFactory = factory;
         _mailPacker = packer;
-        
     }
 
     [Fact]
     public void WhenSubjectOrBodyIsNull()
     {
         //Arrange
-        var logger = _loggerFactory!;
         var packer = _mailPacker!;
-        var service = new EmailService(logger.Object, packer.Object);
+        var service = new EmailService(packer.Object);
 
         
         //Act & Assert
         Assert.Throws<ArgumentNullException>(() => service.SetMessage(null!, null!));
-        _loggerFactory.Verify(x => x.CreateLogger(It.IsAny<string>()), Times.Once);
-
     }
 
     [Fact]
     public void WhenSenderIsNull()
     {
         //Arrange
-        var logger = _loggerFactory!;
         var packer = _mailPacker!;
-        var service = new EmailService(logger.Object, packer.Object);
+        var service = new EmailService(packer.Object);
         
         //Act & Assert
         Assert.Throws<ArgumentNullException>(() => service.SetSenderEmail(null!, null!));
-        _loggerFactory.Verify(x => x.CreateLogger(It.IsAny<string>()), Times.Once);
     }
 
     [Fact]
     public void WhenReceiverIsNull()
     {
         //Arrange
-        var logger = _loggerFactory!;
         var packer = _mailPacker!;
-        var service = new EmailService(logger.Object, packer.Object);
+        var service = new EmailService(packer.Object);
         
         //Act & Assert
         Assert.Throws<ArgumentNullException>(() => service.AddReceiverAddress(null!, null!));
-        _loggerFactory.Verify(x => x.CreateLogger(It.IsAny<string>()), Times.Once);
     }
 
     [Fact]
     public void WhenIsNotNull()
     {
         //Arrange
-        var logger = _loggerFactory!;
         var packer = _mailPacker!;
-        var service = new EmailService(logger.Object, packer.Object);
+        var service = new EmailService(packer.Object);
         
         //Act & Assert
         Assert.Throws<ArgumentNullException>(() => service.AddFile(null!, null!));
-        _loggerFactory.Verify(x => x.CreateLogger(It.IsAny<string>()), Times.Once);
     }
 
     [Fact]
     public async Task WhenBuildAndTheReceiverIsNull()
     {
         //Arrange
-        var logger = _loggerFactory!;
         var packer = _mailPacker!;
-        var service = new EmailService(logger.Object, packer.Object);
+        var service = new EmailService(packer.Object);
         
         //Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(async () =>
@@ -97,17 +79,14 @@ public class MailServiceTests
                     .SetSenderEmail(SenderName, SenderMail)
                     .BuildAsync()
             );
-        
-        _loggerFactory.Verify(x => x.CreateLogger(It.IsAny<string>()), Times.Once);
     }
 
     [Fact]
     public async Task WhenOneOrManyFilesNotExist()
     {
         //Arrange
-        var logger = _loggerFactory!;
         var packer = _mailPacker!;
-        var service = new EmailService(logger.Object, packer.Object);
+        var service = new EmailService(packer.Object);
         
         //Act & Assert
         await Assert.ThrowsAsync<FileNotFoundException>(async () =>
@@ -117,7 +96,5 @@ public class MailServiceTests
                 .AddFile("none", "none")
                 .BuildAsync()
         );
-        
-        _loggerFactory.Verify(x => x.CreateLogger(It.IsAny<string>()), Times.Once);
     }
 }
