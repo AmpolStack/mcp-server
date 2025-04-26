@@ -22,7 +22,7 @@ public class PdfGeneratorServiceTest
         var service = new PdfGeneratorService();
         
         //Act
-        var resp = await service.ConvertHtmlStringToPdf("<h1>Template title</h1><p>lorem ipsum</p>", "none");
+        await Assert.ThrowsAsync<DirectoryNotFoundException>(async ()=> await service.ConvertHtmlStringToPdf("<h1>Template title</h1><p>lorem ipsum</p>", "none"));
     }
     
     

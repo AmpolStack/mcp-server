@@ -1,6 +1,4 @@
-﻿using Services.Custom;
-
-namespace Services.Definitions;
+﻿namespace Services.Definitions;
 
 public interface IPdfGeneratorService
 {

@@ -16,14 +16,14 @@ public class ReportsTool
     private readonly IPdfGeneratorService _pdfGeneratorService;
     private readonly SmtpServerConfiguration _smtpServerConfiguration;
     private readonly ResourceFiles _resourceFiles;
-    private static int _calls = 1;
+    private static readonly int Calls = 1;
 
-    public ReportsTool(IEmailService emailService, ILoggerFactory loggerFactory, IHtmlGeneratorService htmlGeneratorService
+    public ReportsTool(IEmailService emailService, ILogger<ReportsTool> logger, IHtmlGeneratorService htmlGeneratorService
     , IPdfGeneratorService pdfGeneratorService, IOptions<SmtpServerConfiguration> smtpServerConfiguration,
     IOptions<ResourceFiles> resourceFiles)
     {
         _emailService = emailService;
-        _logger = loggerFactory.CreateLogger<ReportsTool>();
+        _logger = logger;
         _htmlGeneratorService = htmlGeneratorService;
         _pdfGeneratorService = pdfGeneratorService;
         _smtpServerConfiguration = smtpServerConfiguration.Value;
@@ -54,15 +54,25 @@ public class ReportsTool
         {
             return false;
         }
-        
-        var fileResult = await _pdfGeneratorService.ConvertHtmlStringToPdf(htmlString, filePath);
+
+        var fileResult = "";
+
+        try
+        {
+            fileResult += await _pdfGeneratorService.ConvertHtmlStringToPdf(htmlString, filePath);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return false;
+        }
 
         var mailMessage = await _emailService
-            .SetMessageSubject("Report #" + _calls + " IA GENERATED")
+            .SetMessageSubject("Report #" + Calls + " IA GENERATED")
             .SetMessageBody(mailBody)
             .SetSenderEmail(_smtpServerConfiguration.Alias!, _smtpServerConfiguration.UserHost!)
             .AddReceiverAddress("temp User", "sacount571@gmail.com")
-            .AddFile(fileResult.CompletePath!, fileResult.ExtensionPath!)
+            .AddFile(fileResult, ".pdf")
             .BuildAsync();
 
         try

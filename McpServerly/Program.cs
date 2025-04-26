@@ -1,17 +1,11 @@
-﻿using System.ComponentModel;
-using System.Diagnostics.Metrics;
-using McpServerly.Setup;
+﻿using McpServerly.Setup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using MimeKit;
-using ModelContextProtocol.Server;
 using MongoDB.Driver;
 using Services.Configurations;
 using Services.Definitions;
 using Services.Implementations;
-using Services.Models;
 
 namespace McpServerly;
 
@@ -25,7 +19,7 @@ class Program
             builder.Configuration.GetSection("Databases:mongo").Bind(mongoConfig);
             
             builder.Services
-                .AddSingleton<IMongoClient>(prov =>
+                .AddSingleton<IMongoClient>((prov) =>
                 {
                     var mongoClient = new MongoClient(mongoConfig.GetConnectionString());
                     return mongoClient;

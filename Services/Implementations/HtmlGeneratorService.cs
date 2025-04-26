@@ -1,5 +1,4 @@
 ﻿using Markdig;
-using Microsoft.Extensions.Logging;
 using Services.Definitions;
 
 namespace Services.Implementations;

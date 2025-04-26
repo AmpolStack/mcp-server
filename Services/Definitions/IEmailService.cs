@@ -1,5 +1,4 @@
 ﻿using MimeKit;
-using Services.Configurations;
 
 namespace Services.Definitions;
 

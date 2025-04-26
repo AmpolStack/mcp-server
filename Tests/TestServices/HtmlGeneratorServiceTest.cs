@@ -1,7 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Extensions.Logging;
-using Moq;
-using Services.Implementations;
+﻿using Services.Implementations;
 
 namespace Tests.TestServices;
 

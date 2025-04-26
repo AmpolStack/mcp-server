@@ -2,14 +2,13 @@
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
-using Services.Definitions;
 
 namespace McpServerly.Prompts;
 
 [McpServerPromptType]
 public class ReportPrompts
 {
-    private static int calls = 1;
+    private static int _calls = 1;
     private readonly ILogger<ReportPrompts> _logger;
 
     public ReportPrompts(ILoggerFactory loggerFactory)
@@ -20,8 +19,8 @@ public class ReportPrompts
     public ChatMessage GenerateReport([Description("The content html for generate report")] string html)
     {
         ChatMessage message = new(ChatRole.User, "Please, make any thing");
-        calls++;
-        _logger.LogInformation($"Generating report for {calls} calls");
+        _calls++;
+        _logger.LogInformation($"Generating report for {_calls} calls");
         return message;
     }
 }

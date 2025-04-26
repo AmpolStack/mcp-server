@@ -1,12 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Net.Mail;
-using System.Text;
-using Microsoft.Extensions.Logging;
+﻿using System.Text;
 using MimeKit;
-using Services.Configurations;
 using Services.Custom;
 using Services.Definitions;
-using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace Services.Implementations;
 
@@ -33,7 +28,7 @@ public class EmailService : IEmailService
         var memoryStream = new MemoryStream(fileBytes);
         var attachment = new MimePart(item.MediaType, item.SubType)
         {
-            Content = new MimeContent(memoryStream, ContentEncoding.Default),
+            Content = new MimeContent(memoryStream),
             ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
             ContentTransferEncoding = ContentEncoding.Base64,
             FileName = Path.GetFileName(item.Path)
