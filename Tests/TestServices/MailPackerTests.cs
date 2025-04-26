@@ -1,9 +1,6 @@
-﻿using System.Net.Mail;
-using MailKit.Security;
+﻿using MailKit.Security;
 using MimeKit;
-using Moq;
 using Services.Configurations;
-using Services.Definitions;
 using Services.Implementations;
 using Tests.Helpers;
 
@@ -16,7 +13,7 @@ public class MailPackerTests
    private static readonly string SenderName = Env.GetVariable("Email:Sender:username");
    private static readonly string ReceiverName = Env.GetVariable("Email:Receiver:username");
    
-   private SmtpServerConfiguration _smtpConfig = new SmtpServerConfiguration()
+   private readonly SmtpServerConfiguration _smtpConfig = new SmtpServerConfiguration()
    {
       Alias = Env.GetVariable("Email:Alias"),
       Host = Env.GetVariable("Email:Host"),
@@ -26,7 +23,7 @@ public class MailPackerTests
       UserHost = Env.GetVariable("Email:UserHost"),
    };
    
-   private MimeMessage _mailMessage = new MimeMessage()
+   private readonly MimeMessage _mailMessage = new MimeMessage()
    {
       Subject = "Test Subject",
       Body = new TextPart("Test Body Mail"),

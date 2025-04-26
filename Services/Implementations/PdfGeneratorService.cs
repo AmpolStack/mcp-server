@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using PuppeteerSharp;
+﻿using PuppeteerSharp;
 using Services.Custom;
 using Services.Definitions;
 

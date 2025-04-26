@@ -1,6 +1,4 @@
-﻿using MailKit;
-using Microsoft.Extensions.Logging;
-using Moq;
+﻿using Moq;
 using Services.Definitions;
 using Services.Implementations;
 using Tests.Helpers;
@@ -25,7 +23,7 @@ public class MailServiceTests
     public void WhenSubjectOrBodyIsNull()
     {
         //Arrange
-        var packer = _mailPacker!;
+        var packer = _mailPacker;
         var service = new EmailService(packer.Object);
 
         
@@ -37,7 +35,7 @@ public class MailServiceTests
     public void WhenSenderIsNull()
     {
         //Arrange
-        var packer = _mailPacker!;
+        var packer = _mailPacker;
         var service = new EmailService(packer.Object);
         
         //Act & Assert
@@ -48,7 +46,7 @@ public class MailServiceTests
     public void WhenReceiverIsNull()
     {
         //Arrange
-        var packer = _mailPacker!;
+        var packer = _mailPacker;
         var service = new EmailService(packer.Object);
         
         //Act & Assert
@@ -59,7 +57,7 @@ public class MailServiceTests
     public void WhenIsNotNull()
     {
         //Arrange
-        var packer = _mailPacker!;
+        var packer = _mailPacker;
         var service = new EmailService(packer.Object);
         
         //Act & Assert
@@ -70,7 +68,7 @@ public class MailServiceTests
     public async Task WhenBuildAndTheReceiverIsNull()
     {
         //Arrange
-        var packer = _mailPacker!;
+        var packer = _mailPacker;
         var service = new EmailService(packer.Object);
         
         //Act & Assert
@@ -85,7 +83,7 @@ public class MailServiceTests
     public async Task WhenOneOrManyFilesNotExist()
     {
         //Arrange
-        var packer = _mailPacker!;
+        var packer = _mailPacker;
         var service = new EmailService(packer.Object);
         
         //Act & Assert
