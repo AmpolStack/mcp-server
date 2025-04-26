@@ -7,14 +7,7 @@ namespace Services.Implementations;
 
 public class PdfGeneratorService : IPdfGeneratorService
 {
-    private readonly ILogger<PdfGeneratorService> _logger;
-
-    public PdfGeneratorService(ILoggerFactory loggerFactory)
-    {
-        this._logger = loggerFactory.CreateLogger<PdfGeneratorService>();
-    }
-
-
+    
     public async Task<FileResult> ConvertHtmlStringToPdf(string htmlContent, string outputPath)
     {
         var result = new FileResult();
@@ -45,7 +38,6 @@ public class PdfGeneratorService : IPdfGeneratorService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to generate pdf from HTML string");
             result.Success = false;
             return result;
         }
