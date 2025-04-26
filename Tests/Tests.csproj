@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\McpServerly\McpServerly.csproj" />
       <ProjectReference Include="..\Services\Services.csproj" />
     </ItemGroup>
 
