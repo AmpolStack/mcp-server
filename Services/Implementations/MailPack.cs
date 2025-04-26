@@ -11,7 +11,7 @@ public class MailPack : IMailPacker
     private MimeMessage? _mailMessage;
     private SmtpServerConfiguration? _smtpConfig;
 
-    public void Clear()
+    private void Clear()
     {
         _mailMessage = null;
     }
@@ -24,6 +24,10 @@ public class MailPack : IMailPacker
 
     public IMailPacker SetMailMessage(MimeMessage message)
     {
+        if (message.Equals(null))
+        {
+            throw new NullReferenceException(nameof(message));
+        }
         _mailMessage = message;
         return this;
     }

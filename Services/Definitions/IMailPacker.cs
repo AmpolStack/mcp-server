@@ -8,6 +8,5 @@ public interface IMailPacker
 {
     public IMailPacker SetSmtpConfig(SmtpServerConfiguration config);
     public IMailPacker SetMailMessage(MimeMessage message);
-    public void Clear();
     public Task SendAsync();
 }
