@@ -7,38 +7,25 @@ namespace Services.Implementations;
 public class PdfGeneratorService : IPdfGeneratorService
 {
     
-    public async Task<FileResult> ConvertHtmlStringToPdf(string htmlContent, string outputPath)
+    public async Task<string> ConvertHtmlStringToPdf(string htmlContent, string outputPath)
     {
-        var result = new FileResult();
         if (string.IsNullOrEmpty(htmlContent) || string.IsNullOrWhiteSpace(outputPath))
         {
-            result.Success = false;
-            return result;
+            throw new ArgumentNullException(nameof(htmlContent) + " or " + nameof(outputPath) + " is null or empty");
         }
         
-        try
+        var browserFetcher = new BrowserFetcher();
+        var id = Guid.NewGuid().ToString();
+        outputPath = Path.Combine(outputPath, id);
+        outputPath += ".pdf";
+        await browserFetcher.DownloadAsync(); 
+        await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions()
         {
-            var browserFetcher = new BrowserFetcher();
-            var id = Guid.NewGuid().ToString();
-            outputPath = Path.Combine(outputPath, id);
-            outputPath += ".pdf";
-            await browserFetcher.DownloadAsync(); 
-            await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions()
-            {
                 Headless = true
-            });
-            await using var page = await browser.NewPageAsync();
-            await page.SetContentAsync(htmlContent);
-            await page.PdfAsync(outputPath);
-            result.CompletePath = outputPath;
-            result.Success = true;
-            result.ExtensionPath = "pdf";
-            return result;
-        }
-        catch (Exception ex)
-        {
-            result.Success = false;
-            return result;
-        }
+        });
+        await using var page = await browser.NewPageAsync();
+        await page.SetContentAsync(htmlContent);
+        await page.PdfAsync(outputPath);
+        return outputPath;
     }
 }

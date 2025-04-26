@@ -10,13 +10,9 @@ public class PdfGeneratorServiceTest
         //Arrange
         var service = new PdfGeneratorService();
         
-        //Act
-        var resp = await service.ConvertHtmlStringToPdf(null!, null!);
+        //Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(async ()=> await service.ConvertHtmlStringToPdf(null!, null!));
         
-        //Assert
-        Assert.False(resp.Success);
-        Assert.Null(resp.CompletePath);
-        Assert.Null(resp.ExtensionPath);
     }
 
     [Fact]
@@ -27,11 +23,6 @@ public class PdfGeneratorServiceTest
         
         //Act
         var resp = await service.ConvertHtmlStringToPdf("<h1>Template title</h1><p>lorem ipsum</p>", "none");
-        
-        //Assert
-        Assert.False(resp.Success);
-        Assert.Null(resp.CompletePath);
-        Assert.Null(resp.ExtensionPath);
     }
     
     

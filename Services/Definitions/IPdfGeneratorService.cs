@@ -4,5 +4,11 @@ namespace Services.Definitions;
 
 public interface IPdfGeneratorService
 {
-    public Task<FileResult> ConvertHtmlStringToPdf(string htmlContent, string outputPath);
+    /// <summary>
+    /// Converts HTML string in PDF file
+    /// </summary>
+    /// <param name="htmlContent">content in format HTML</param>
+    /// <param name="outputPath">The output path without the filename</param>
+    /// <returns>The new path file</returns>
+    public Task<string> ConvertHtmlStringToPdf(string htmlContent, string outputPath);
 }
