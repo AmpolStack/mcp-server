@@ -4,6 +4,6 @@ It is a project that seeks to express the implementation of model context protoc
 ### PROJECT STEPS
 - [x] Generalized shared service.
 - [x] **MCP** service implementation.
-- [ ] **MCP** client implementation.
+- [x] **MCP** client implementation.
 - [ ] Docker image of the **MCP** server.
-- [ ] Implement tests.
+- [x] Implement tests.
