@@ -60,18 +60,6 @@ public class ReportToolsTest
         _resourceFiles
             .SetupGet(p => p.Value)
             .Returns(new ResourceFiles(){ FilePath = "temp/path"});
-
-        _smtpConfig
-            .SetupGet(p => p.Value)
-            .Returns(new SmtpServerConfiguration()
-            {
-                Alias = "test",
-                Host = "testHost",
-                Port = 20,
-                Key = "testKey",
-                SecureSocketOptions = SecureSocketOptions.StartTls,
-                UserHost = "testUser",
-            });
         
         _pdfGeneratorService
             .Setup(x => x.ConvertHtmlStringToPdf(It.IsAny<string>(), It.IsAny<string>()))
@@ -99,13 +87,17 @@ public class ReportToolsTest
     {
         //Arrange
         var mailPackerMock = new Mock<IMailPacker>();
-        mailPackerMock
-            .Setup(m => m.SetSmtpConfig(It.IsAny<SmtpServerConfiguration>()))
-            .Returns(mailPackerMock.Object);
-        mailPackerMock
-            .Setup(m => m.SendAsync())
-            .ThrowsAsync(new Exception("SMTP failure"));
-
+       
+        _smtpConfig.SetupGet(x => x.Value)
+            .Returns(new SmtpServerConfiguration()
+            {
+                Alias = "test",
+                UserHost = "test@test.com",
+                Host = "test@test2.com",
+                Port = 123,
+                SecureSocketOptions = SecureSocketOptions.None,
+            });
+        
         _resourceFiles
             .SetupGet(p => p.Value)
             .Returns(new ResourceFiles(){ FilePath = "temp/path"});
