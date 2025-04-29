@@ -7,7 +7,7 @@ public class Client
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public required string Id { get; set; }
+    public string? Id { get; set; }
     
     [BsonElement("firstName")]
     public string? FirstName { get; set; }
