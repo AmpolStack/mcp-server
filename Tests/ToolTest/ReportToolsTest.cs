@@ -7,6 +7,7 @@ using Services.Configurations;
 using Services.Definitions;
 using Services.Implementations;
 using Tests.Helpers;
+using ZstdSharp.Unsafe;
 
 namespace Tests.ToolTest;
 
@@ -87,7 +88,7 @@ public class ReportToolsTest
     {
         //Arrange
         var mailPackerMock = new Mock<IMailPacker>();
-       
+        
         _smtpConfig.SetupGet(x => x.Value)
             .Returns(new SmtpServerConfiguration()
             {
@@ -149,11 +150,19 @@ public class ReportToolsTest
 
         //Act
         var resp = await service.SendReportWithHtml("test subject", "# test body");
-        var resp2 = await service.SendReportWithHtml("test subject", "# test body");
+        var resp2 = await service.SendReportWithMarkdown("test subject", "# test body");
         
         //Assert
         Assert.False(resp);
         Assert.False(resp2);
+        
+        _smtpConfig.VerifyGet(x => x.Value, Times.Once);
+        _resourceFiles.VerifyGet(x => x.Value, Times.Once);
+        _pdfGeneratorService.Verify(x => x.ConvertHtmlStringToPdf(It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
+        _htmlGeneratorService.Verify(x => x.GenerateFromMarkdownString(It.IsAny<string>()), Times.Once);
+        mailPackerMock.Verify(x => x.SetSmtpConfig(It.IsAny<SmtpServerConfiguration>()), Times.Exactly(2));
+        //Because the previous mailPacker method is called it returns an exception
+        mailPackerMock.Verify(x => x.SendAsync(), Times.Never);
     }
     
 }

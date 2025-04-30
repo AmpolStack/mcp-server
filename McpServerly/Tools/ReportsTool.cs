@@ -63,7 +63,7 @@ public class ReportsTool
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, ex.Message);
+            _logger.LogError(ex, "Error detected in pdf generation: {ex.Message}", ex.Message);
             return false;
         }
 
@@ -84,7 +84,7 @@ public class ReportsTool
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, ex.Message);
+            _logger.LogError(ex, "Error detected in send mail process: {ex.Message}" , ex.Message);
             return false;
         }
         
