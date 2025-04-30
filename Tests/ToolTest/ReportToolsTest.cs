@@ -19,6 +19,7 @@ public class ReportToolsTest
     private readonly Mock<IPdfGeneratorService> _pdfGeneratorService;
     private readonly Mock<IOptions<SmtpServerConfiguration>> _smtpConfig;
     private readonly Mock<IOptions<ResourceFiles>> _resourceFiles;
+    
     public ReportToolsTest()
     {
         _emailService = new Mock<IEmailService>();
@@ -66,6 +67,10 @@ public class ReportToolsTest
             .Setup(x => x.ConvertHtmlStringToPdf(It.IsAny<string>(), It.IsAny<string>()))
             .Throws<Exception>();
         
+        _htmlGeneratorService
+            .Setup(x => x.GenerateFromMarkdownString(It.IsAny<string>()))
+            .Returns("<h1>test body</h1>");
+        
         var service = new ReportsTool(_emailService.Object,
             _logger.Object,
             _htmlGeneratorService.Object,
@@ -75,12 +80,14 @@ public class ReportToolsTest
         
         //Act
         var resp = await service.SendReportWithHtml("test subject", "# test body");
-        var resp2 = await service.SendReportWithHtml("test subject", "# test body");
+        var resp2 = await service.SendReportWithMarkdown("test subject", "# test body");
         
         //Assert
         Assert.False(resp);
         Assert.False(resp2);
-
+        _resourceFiles.VerifyGet(x => x.Value, Times.Once);
+        _pdfGeneratorService.Verify(x => x.ConvertHtmlStringToPdf(It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
+        _htmlGeneratorService.Verify(x => x.GenerateFromMarkdownString(It.IsAny<string>()), Times.Once);
     }
 
     [Fact]
