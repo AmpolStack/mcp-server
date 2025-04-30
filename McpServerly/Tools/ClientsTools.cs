@@ -13,15 +13,11 @@ public class ClientsTools
     private readonly IGenericRepository? _repository;
     private readonly ILogger<ClientsTools> _logger;
 
-    public ClientsTools(IGenericRepository repository, ILoggerFactory loggerFactory)
+    public ClientsTools(IGenericRepository repository, ILogger<ClientsTools> logger)
     {
         _repository = repository;
-        _logger = loggerFactory.CreateLogger<ClientsTools>();
+        _logger = logger;
     }
-    // public static void SetRepository(IGenericRepository repository)
-    // {
-    //     _repository = repository;
-    // }
 
     [McpServerTool, Description("Returns list of current clients")]
     public async Task<List<Client>> GetClients()
